@@ -1,0 +1,25 @@
+/* .categories {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    padding: 16px;
+  } */
+  
+  .link{
+    text-decoration: none;
+    color: black;
+  }
+  
+    .categories {
+        display: flex;
+        gap: 2rem;
+        justify-content: center;
+        align-items: center;
+        border-radius: 8px;
+        transition: all 0.3s;
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
+        margin: 0;
+        padding: 0;
+    }
