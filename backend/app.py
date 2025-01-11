@@ -4,7 +4,9 @@ from flask_cors import CORS
 import pandas as pd
 import os
 import cv2
+import numpy as np
 from tracker import FaceAndBodyTracker
+from recommendation import ItemRecommender
 from utils import (
     get_body_dimensions, overlay_image_on_body, load_dataset_images,
     get_product_id_from_image, track_and_recommend
@@ -16,40 +18,20 @@ CORS(app)
 # Load dataset images and filenames
 dataset_images, filenames = load_dataset_images('./static/output_images')
 
+# Load the product data
+products_df = pd.read_csv("updated_styles.csv")
+
 @app.route('/api/products', methods=['GET'])
 def get_products():
-    import os  # Ensure the os module is imported if not already
-    import numpy as np  # Ensure numpy is imported if not already
-    
-    # Read CSV and convert to list of dictionaries
-    products_df = pd.read_csv("updated_styles.csv")
     products_dict = products_df.to_dict(orient='records')
-
-    # Ensure all values are converted to native Python types
-    def convert_types(obj):
-        if isinstance(obj, np.generic):  # Handles numpy types like int64, float64
-            return obj.item()  # Convert to Python scalar
-        return obj
-
     products_serializable = [
         {key: convert_types(value) for key, value in product.items()}
         for product in products_dict
     ]
-
-    # Add additional image-related products
-    products = []  # Initialize a list for all products
-    products.extend(products_serializable)  # Add products from the CSV
-
-    # Assuming filenames is a list of image filenames in the output_images folder
+    products = []
+    products.extend(products_serializable)
     output_images_dir = "./static/output_images"
     filenames = os.listdir(output_images_dir)
-
-    # A placeholder for a function that extracts product ID from an image filename
-    def get_product_id_from_image(filename):
-        # Implement logic to extract product ID from filename
-        # For example, if filenames are like "123_image.jpg", return 123
-        return filename.split("_")[0] if "_" in filename else None
-
     for filename in filenames:
         product_id = get_product_id_from_image(filename)
         if product_id is not None:
@@ -58,9 +40,22 @@ def get_products():
                 'image': f'/output_images/{filename}'.replace("\\", "/"),
                 'name': filename
             })
-
     return jsonify(products)
 
+@app.route('/api/categories', methods=['GET'])
+def get_categories():
+    categories = products_df['gender'].unique().tolist()
+    return jsonify(categories)
+
+@app.route('/api/products/<category>', methods=['GET'])
+def get_products_by_category(category):
+    filtered_products = products_df[(products_df['gender'] == category) & (products_df['usage'] == 'Casual')]
+    products_dict = filtered_products.to_dict(orient='records')
+    products_serializable = [
+        {key: convert_types(value) for key, value in product.items()}
+        for product in products_dict
+    ]
+    return jsonify(products_serializable)
 
 @app.route('/api/recommendations/<int:product_id>', methods=['GET'])
 def get_recommendations(product_id):
@@ -112,6 +107,22 @@ def try_on():
         cv2.destroyAllWindows()
 
     return jsonify({'message': 'Try-on session ended'})
+
+def convert_types(obj):
+    if isinstance(obj, np.generic):
+        return obj.item()
+    return obj
+
+def get_product_id_from_image(filename):
+    return filename.split("_")[0] if "_" in filename else None
+
+def track_and_recommend(current_item_id):
+    recommender = ItemRecommender(styles_csv_path="updated_styles.csv", images_folder_path="output_images")
+    recommended_items = recommender.recommend_similar_items(current_item_id)
+    if recommended_items.empty:
+        print("No recommended items found.")
+        return pd.DataFrame()
+    return recommended_items
 
 if __name__ == '__main__':
     app.run(debug=True)

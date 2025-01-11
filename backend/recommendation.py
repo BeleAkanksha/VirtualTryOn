@@ -1,10 +1,13 @@
 import pandas as pd
+from sklearn.metrics.pairwise import cosine_similarity
+from sklearn.feature_extraction.text import TfidfVectorizer
 
 class ItemRecommender:
     def __init__(self, styles_csv_path, images_folder_path):
         self.styles_csv_path = styles_csv_path
         self.images_folder_path = images_folder_path
-        self.styles_df = pd.read_csv(styles_csv_path)
+        self.styles_df = pd.read_csv("updated_styles.csv")
+        self.vectorizer = TfidfVectorizer()
 
     def recommend_similar_items(self, current_item_id):
         # Get the details of the current item
@@ -14,19 +17,25 @@ class ItemRecommender:
 
         current_item = current_item.iloc[0]
 
-        # Filter the dataset based on the attributes of the current item
-        filtered_df = self.styles_df[
-            (self.styles_df['gender'] == current_item['gender']) &
-            (self.styles_df['subCategory'] == current_item['subCategory']) &
-            (self.styles_df['articleType'] == current_item['articleType']) &
-            (self.styles_df['baseColour'] == current_item['baseColour']) &
-            (self.styles_df['season'] == current_item['season']) &
-            (self.styles_df['usage'] == current_item['usage']) &
-            (self.styles_df['id'] != current_item_id)  # Exclude the current item itself
-        ]
+        # Filter the dataset based on the gender of the current item
+        filtered_df = self.styles_df[self.styles_df['gender'] == current_item['gender']]
 
-        return filtered_df
+        # Combine relevant features into a single string for vectorization
+        filtered_df['combined_features'] = filtered_df.apply(lambda row: f"{row['subCategory']} {row['articleType']} {row['baseColour']} {row['season']} {row['usage']}", axis=1)
+        current_item_combined_features = f"{current_item['subCategory']} {current_item['articleType']} {current_item['baseColour']} {current_item['season']} {current_item['usage']}"
+
+        # Vectorize the combined features
+        tfidf_matrix = self.vectorizer.fit_transform(filtered_df['combined_features'])
+        current_item_vector = self.vectorizer.transform([current_item_combined_features])
+
+        # Calculate cosine similarity
+        cosine_similarities = cosine_similarity(current_item_vector, tfidf_matrix).flatten()
+
+        # Get the indices of the most similar items
+        similar_indices = cosine_similarities.argsort()[-6:-1][::-1]  # Get top 5 similar items
+
+        # Return the most similar items
+        return filtered_df.iloc[similar_indices]
 
 # Example usage:
 # recommender = ItemRecommender(styles_csv_path="updated_styles.csv", images_folder_path="output_images")
-# recommended_items = recommender.recommend_similar_items(current_item_id)
