@@ -1,0 +1,13 @@
+.tryon-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.video-feed {
+  display: none;
+}
+
+.overlay-canvas {
+  border: 1px solid #ccc;
+}
