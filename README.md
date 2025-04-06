@@ -32,14 +32,17 @@ The project is organized into the following files and directories:
     ```
 
 ## Usage
-1. Run the main script:
+1. Run the backend:
     ```bash
-    python main.py
+    python app.py
     ```
 
-2. Follow the on-screen instructions to select a camera and an initial clothing item.
+2. Run the frontend:
+    ```bash
+    npm start
+    ```
 
-3. Press 'r' to get recommendations for similar items.
+3. Follow the on-screen instructions to select a camera and an initial clothing item.
 
 4. Select a recommended item to try it on virtually.
 
@@ -48,8 +51,6 @@ The project is organized into the following files and directories:
 - MediaPipe
 - Pandas
 
-## Contributing
-Contributions are welcome! Please open an issue or submit a pull request for any improvements or bug fixes.
 
 ## License
 This project is licensed under the MIT License. See the LICENSE file for details.

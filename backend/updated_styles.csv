@@ -87,7 +87,7 @@ id,gender,masterCategory,subCategory,articleType,baseColour,season,year,usage,pr
 9543,Men,apparel,Topwear,Tshirts,Red,Fall,2011.0,Sports,Nike Men Red Polo Tshirts,output_images\9543.png
 10722,Men,apparel,Topwear,Tshirts,White,Summer,2011.0,Casual,Nike Men Casual short sleeve tshirt White Tshirts,output_images\10722.png
 4899,Girls,apparel,Topwear,Tshirts,Green,Summer,2011.0,Casual,Levis Kids Girl's Desiree Green Kidswear,output_images\4899.png
-4897,Birls,apparel,Topwear,Tops,Yellow,Summer,2011.0,Casual,Levis Kids Girl's Diane Yellow Kidswear,output_images\4897.png
+4897,Girls,apparel,Topwear,Tops,Yellow,Summer,2011.0,Casual,Levis Kids Girl's Diane Yellow Kidswear,output_images\4897.png
 2738,Boys,apparel,Topwear,Tshirts,White,Summer,2011.0,Casual,Disney Kids Boy's Double Fun Kidswear,output_images\2738.png
 2707,Girls,apparel,Dress,Dresses,Pink,Summer,2011.0,Casual,Disney Kids Girl's Dress Pink Pooh Kidswear,output_images\2707.png
 10713,Women,apparel,Bottomwear,Capris,Blue,Winter,2011.0,Sports,Nike Women Blue Dri-Fit Capris,output_images\10713.png
